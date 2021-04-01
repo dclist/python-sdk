@@ -30,6 +30,7 @@ setup(
   install_requires = requirements,
   long_description = readme,
   extras_require = extras_require,
+  include_package_data=True,
   long_description_content_type = "text/markdown",
   classifiers = [
     'License :: OSI Approved :: MIT License',
