@@ -34,9 +34,9 @@ class dclistpy(commands.Cog):
         to_send = f"found bot {bot['username']} using this github {bot['github']} and vote_count is {bot['stats']['voteCount']}"
         await ctx.send(to_send)
 
-    @dclist.command(name="user")
-    async def get_dclist_user(self, ctx, user_id):
-        user = await self.dclistapi.getUserById(user_id)
+    @dclist.command(name="me")
+    async def get_dclist_user(self, ctx):
+        user = await self.dclistapi.getUserById(ctx.author.id)
         to_send = f"found user {user['username']} using this website {user['website']} and discriminator is {user['discriminator']}"
         await ctx.send(to_send)
 
