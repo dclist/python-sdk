@@ -6,7 +6,7 @@ It's open-source and always open to prs and contributions.
 
 ## Installation
 
-You can install package via [pip](https://www.pypi.org/dclist.py) or [github](https://github.com/dclist/python-sdk) with following commands :
+You can install package via [pip](https://pypi.org/project/dclist.py) or [github](https://github.com/dclist/python-sdk) with following commands :
 
 **Recomended**:
 ```
