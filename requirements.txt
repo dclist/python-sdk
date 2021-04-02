@@ -1,1 +1,1 @@
-gql[aiohttp]>=3.0.0a5
+gql[aiohttp,websockets]>=3.0.0a5

@@ -22,5 +22,6 @@ version_info = VersionInfo(major=0, minor=1, micro=5, releaselevel='final', seri
 version_info = f'{version_info.major}.{version_info.minor}.{version_info.micro}'
 
 from .client import DCLClient
-from .gqlhttp import GQLHTTPClient
+from .gqlengine import GQLEngine
+from .helpers.queries import Queries
 from .errors import *

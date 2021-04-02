@@ -26,7 +26,7 @@ import logging, os
 import typing as t
 
 from . import errors
-from .gqlhttp import GQLHTTPClient
+from .gqlengine import GQLEngine
 
 log = logging.getLogger(__name__)
 
@@ -41,6 +41,13 @@ class DCLClient:
     token: str
         Your bot's Dclist.Net API Token.
 
+    **sdk_updates: Optional[bool]
+        wheter get events or not when new comment or vote occurs.
+        Defaults to ``True``.
+    **always_use_websockets: Optional[bool]
+        option to run entire engine with websockets.
+        this is not recomended due opening and closing new sockets for fetching purposes.
+        Defaults to ``False``.
     **loop: Optional[event loop]
         An `event loop` to use for asynchronous operations.
         Defaults to ``bot.loop``.
@@ -54,7 +61,11 @@ class DCLClient:
         self.bot = bot
         self.bot_id = None
         self.loop = kwargs.get("loop", bot.loop)
-        self.http = GQLHTTPClient(api_token, loop=self.loop, transporter=kwargs.get('transporter'))
+        self.engine = GQLEngine(api_token, loop=self.loop, transporter=kwargs.get('transporter'), always_use_websockets=kwargs.get('always_use_websockets'))
+        self.sdk_updates = kwargs.get('sdk_updates', True)
+
+        if self.sdk_updates:
+            self.loop.create_task(self.__dispatch_events())
 
     async def __get_ready(self):
         await self.bot.wait_until_ready()
@@ -65,6 +76,16 @@ class DCLClient:
         await self.__get_ready()
         return self.bot_id, (await self.bot.application_info()).owner.id
 
+    async def __dispatch_events(self):
+        await self.__get_ready()
+
+        async for notification in self.engine.subscribe_to_events():
+            log.debug('dispatching event. trigger type=%s', notification['type'])
+            self.bot.dispatch('dcl_event', notification)
+            # bot.listener
+            # async def on_dcl_event(payload):
+            # event -> {'type': 'SDK_NEW_VOTE' or 'SDK_NEW_COMMENT',
+            #   'payload': {'user': {'id': 124124 ...}}}
 
     async def postBotStats(self, guild_count: t.Optional[int]=None,
             user_count: t.Optional[int]=None, shard_count: t.Optional[int]=None):
@@ -81,7 +102,7 @@ class DCLClient:
             guild_count = len(self.bot.guilds)
         if user_count is None:
             guild_count = len(list(self.bot.get_all_members()))
-        data = await self.http.postBotStats(guild_count, user_count, shard_count)
+        data = await self.engine.postBotStats(guild_count, user_count, shard_count)
         return data['postBotStats']
 
     async def getBotById(self, bot_id: t.Optional[int]) -> dict:
@@ -98,7 +119,7 @@ class DCLClient:
         if bot_id is None:
             bot_id, _ = await _get_app_info()
 
-        data = await self.http.getBotById(bot_id)
+        data = await self.engine.getBotById(bot_id)
         return data['getBot']
 
     async def getUserById(self, user_id: t.Optional[int]) -> dict:
@@ -115,7 +136,7 @@ class DCLClient:
         if user_id is None:
             _, user_id = await _get_app_info()
 
-        data = await self.http.getUserById(user_id)
+        data = await self.engine.getUserById(user_id)
         return data['getUser']
 
     async def isUserVoted(self, user_id: t.Optional[int]) -> bool:
@@ -132,7 +153,7 @@ class DCLClient:
         if user_id is None:
             _, user_id = await _get_app_info()
 
-        data = await self.http.isUserVoted(user_id)
+        data = await self.engine.isUserVoted(user_id)
         return data['isUserVoted']
 
     async def getUserComment(self, user_id: t.Optional[int]) -> dict:
@@ -150,5 +171,5 @@ class DCLClient:
         if user_id is None:
             _, user_id = await _get_app_info()
 
-        data = await self.http.getUserComment(user_id)
+        data = await self.engine.getUserComment(user_id)
         return data['getUserComment']

@@ -4,10 +4,12 @@ class Queries:
     getUser = """query getUser($userId: String!) { getUser(userId: $userId) { $FIELDS$ } }"""
     getUserComment = """query getUserComment($userId: String!) { getUserComment(userId: $userId) { $FIELDS$ } }"""
     isUserVoted = """query isUserVoted($userId: String!) { isUserVoted(userId: $userId) }"""
-    # if you guys wanna implement wss:subscribe we're always open to prs and contributions!
+    SDKUpdateSubcription = """subscription SDKUpdateSubcription($topics: [SDKUpdateTypeEnum!]!) { sdkUpdates(topics: $topics) { type payload { ... on NewVoteSDKUpdatePayload { user { $FIELDS:VOTE:USER$ } } ... on NewCommentSDKUpdatePayload { comment { $FIELDS:VOTE:COMMENT$ } } } } }"""
 
     @staticmethod
     def fields(query:str, fields) -> str:
+        query = query.replace('$FIELDS:VOTE:USER$', Queries.user_fields())
+        query = query.replace('$FIELDS:VOTE:COMMENT$', Queries.comment_fields())
         return query.replace('$FIELDS$', str(fields))
 
     @staticmethod
