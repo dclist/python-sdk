@@ -41,7 +41,7 @@ class dclistpy(commands.Cog):
         await ctx.send(to_send)
 
     @dclist.command(name="voted")
-    async def get_dclist_user(self, ctx, user_id):
+    async def get_dclist_voted(self, ctx, user_id):
         is_voted = await self.dclistapi.isUserVoted(user_id)
         if is_voted:
             await ctx.send('yessir, i did voted from this dude.')
