@@ -46,8 +46,7 @@ class DCLClient:
         Defaults to ``True``.
     **always_use_websockets: Optional[bool]
         option to run entire engine with websockets.
-        this is not recomended due opening and closing new sockets for fetching purposes.
-        Defaults to ``False``.
+        Defaults to ``True``.
     **loop: Optional[event loop]
         An `event loop` to use for asynchronous operations.
         Defaults to ``bot.loop``.
