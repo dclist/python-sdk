@@ -64,7 +64,7 @@ class DCLClient:
         self.engine = GQLEngine(api_token, loop=self.loop, transporter=kwargs.get('transporter'), always_use_websockets=kwargs.get('always_use_websockets'))
         self.sdk_updates = kwargs.get('sdk_updates', True)
 
-        if self.sdk_updates:
+        if self.sdk_updates and api_token:
             self.loop.create_task(self.__dispatch_events())
 
     async def __get_ready(self):
