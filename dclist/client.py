@@ -81,6 +81,8 @@ class DCLClient:
             guild_count = len(self.bot.guilds)
         if user_count is None:
             guild_count = len(list(self.bot.get_all_members()))
+        if shard_count is None:
+            shard_count = 0
         data = await self.http.postBotStats(guild_count, user_count, shard_count)
         return data['postBotStats']
 
