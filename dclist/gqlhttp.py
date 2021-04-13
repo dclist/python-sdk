@@ -59,7 +59,7 @@ class GQLHTTPClient:
     def __init__(self, api_token, *args, **kwargs):
         self.loop = kwargs.get('loop') or asyncio.get_event_loop()
         self.token_provided = api_token is not None
-        self.__auth = 'Sdk '+ (api_token or os.getenv('DCLIST_TOKEN') or '')
+        self.__auth = 'Sdk '+ (api_token or os.environ.get('DCLIST_TOKEN') or '')
 
         self._transporter = kwargs.get('transporter') or AIOHTTPTransport(url=self.BASE, headers={'Authorization': self.__auth})
     
